@@ -392,7 +392,27 @@ func main() {
 					}
 
 					if score >= cfg.AI.Threshold {
+						// ENRICHMENT STEP: If very high score (e.g. >= 90), try to find recruiters
+						recruiterMsg := ""
+						if score >= 85 {
+							enrich := EnrichJob(job)
+							if len(enrich.Recruiters) > 0 {
+								recruiterMsg += "\n\n👤 **Hiring Team**:"
+								for _, r := range enrich.Recruiters {
+									recruiterMsg += fmt.Sprintf("\n- [%s](%s)", r.Name, r.Profile)
+								}
+							}
+							if enrich.CompanyInfo != "" {
+								recruiterMsg += fmt.Sprintf("\n🏢 **Context**: [Google Search](%s)", enrich.CompanyInfo)
+							}
+						}
+
 						job.Title = fmt.Sprintf("[AI: %d] %s", score, job.Title)
+						// Append enrichment data to link so it shows up in msg
+						if recruiterMsg != "" {
+							job.Link += recruiterMsg
+						}
+
 						results <- job
 					}
 				}(i, j)
