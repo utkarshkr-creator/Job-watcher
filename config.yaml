@@ -1,0 +1,129 @@
+# Keywords matching your resume skills
+keywords:
+  # Languages
+  - python
+  - javascript
+  - typescript
+  - c++
+  - cpp
+  
+  # Backend & Frameworks
+  - node.js
+  - nodejs
+  - express
+  - fullstack
+  - full stack
+  - full-stack
+  
+  # Generic Titles (Important for catching SDE roles)
+  - software engineer
+  - software developer
+  - SDE
+  - MTS
+  - member of technical staff
+  - developer
+  - programmer
+  - engineering
+  
+  # Frontend
+  - react
+  - next.js
+  - nextjs
+  - frontend
+  - front end
+  
+  # Your project tech
+  - websocket
+  - webrtc
+  - redis
+  - postgresql
+  - postgres
+  - prisma
+  - docker
+  
+  # Roles
+  - software engineer
+  - software developer
+  - sde
+  - web developer
+  - mern
+  - full stack developer
+  
+  # Bonus - learning/interested
+  - golang
+  - go developer
+  - blockchain
+  - web3
+  - distributed systems
+
+# Location filter - India or Remote
+locations:
+  - india
+  - bangalore
+  - bengaluru
+  - mumbai
+  - delhi
+  - hyderabad
+  - pune
+  - gurgaon
+  - gurugram
+  - noida
+  - chennai
+  - kolkata
+  - allahabad
+  - prayagraj
+  - remote
+  - work from home
+  - wfh
+  - anywhere
+
+# Max experience - you have ~1 year contract experience
+max_experience_years: 2
+
+# Exclude senior roles
+exclude_keywords:
+  - senior
+  - sr.
+  - sr 
+  - lead
+  - principal
+  - staff
+  - manager
+  - director
+  - architect
+  - head of
+  - vp
+  - 5+ years
+  - 4+ years
+  - 3+ years
+  - 5 years
+  - 4 years
+  - 3 years
+
+indeed_rss:
+  - "https://www.indeed.com/jobs?q=software+engineer+fresher&l=India"
+  - "https://www.indeed.com/jobs?q=react+developer&l=India"
+  - "https://www.indeed.com/jobs?q=node.js+developer&l=India"
+  - "https://www.indeed.com/jobs?q=full+stack+developer+entry+level&l=India"
+
+sources:
+  remoteok: false   # requires premium
+  razorpay: true
+  wellfound: false  # requires JavaScript
+  indeed: true
+  linkedin: true
+  naukri: false     # requires JavaScript
+  instahyre: true   # India-focused, API-based
+  companies: true   # 90+ major tech company career pages
+  ycjobs: true      # YCombinator startup jobs (workatastartup.com)
+  hnjobs: true      # Hacker News "Who's Hiring" threads
+  reddit: true      # r/cscareerquestions, r/forhire
+  triplebyte: true  # Triplebyte/Karat pre-screened jobs
+  sharedlists: true # Google Sheets & GitHub Hiring Tables
+
+# AI Resume Matching (Optional)
+ai:
+  enabled: true
+  model: "gemma3:4b"  # Run 'ollama pull gemma3:4b' if needed
+  threshold: 70       # Only notify if score >= 70
+
