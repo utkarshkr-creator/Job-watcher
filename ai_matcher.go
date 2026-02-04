@@ -59,16 +59,23 @@ func scoreJobWithAI(job Job, cfg AIConfig) (int, string, error) {
 	// defer aiMutex.Unlock()
 
 	// Use Title and Source for context
-	prompt := fmt.Sprintf(`Role: Recruiter. 
-Task: Evaluate if this job is a good match for the candidate.
+	// Use Title and Source for context
+	prompt := fmt.Sprintf(`Role: Hiring Manager. 
+Task: Evaluate match for a Fresher/Entry-Level Candidate (0-2 YOE).
+
 Candidate Resume:
 %s
 
 Job Title: %s
-Company/Source: %s
+Company: %s
+
+CRITICAL RULES:
+1. IF Job Title contains "Senior", "Staff", "Lead", "Principal", "Architect", or requires >2 years experience: SCORE MUST BE 0.
+2. IF Job is for "Intern", "New Grad", "Associate", "Junior", or "0-2 years": Score normally based on skill match.
+3. IGNORE skill match if Rule #1 is violated.
 
 Constraint: Return ONLY a JSON object with "score" (0-100) and "reason" (short string).
-Example: {"score": 85, "reason": "Matches Python/Go skills"}`, resumeText, job.Title, job.Source)
+Example: {"score": 0, "reason": "Senior role (3+ years) not for fresher"}`, resumeText, job.Title, job.Source)
 
 	reqBody := OllamaRequest{
 		Model:  cfg.Model,

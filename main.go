@@ -21,7 +21,8 @@ type Config struct {
 	MaxExperienceYears int             `yaml:"max_experience_years"`
 	IndeedRSS          []string        `yaml:"indeed_rss"`
 	Sources            map[string]bool `yaml:"sources"`
-	AI                 AIConfig        `yaml:"ai"` // New AI config
+	AI                 AIConfig        `yaml:"ai"`             // New AI config
+	RetentionDays      int             `yaml:"retention_days"` // Days to keep job history
 }
 
 var cfg Config
@@ -34,12 +35,18 @@ func loadConfig() Config {
 			Sources: map[string]bool{
 				"remoteok": true,
 			},
+			RetentionDays: 30,
 		}
 	}
 
 	var c Config
 	if err := yaml.Unmarshal(data, &c); err != nil {
 		fmt.Println("Warning: Could not parse config.yaml")
+	}
+
+	// Default retention if not set
+	if c.RetentionDays == 0 {
+		c.RetentionDays = 30
 	}
 
 	return c
@@ -83,8 +90,20 @@ func saveJobRecords(jobs []Job, existingRecords map[string]int64) {
 	now := time.Now().Unix()
 	var records []JobRecord
 
+	// Calculate cutoff time for retention
+	retentionDays := cfg.RetentionDays
+	if retentionDays <= 0 {
+		retentionDays = 30 // Safety fallback
+	}
+	cutoff := now - int64(retentionDays*24*60*60)
+
 	// Add existing jobs with their original timestamps
 	for id, ts := range existingRecords {
+		// Cleanup: Skip references older than retention period
+		if ts < cutoff {
+			continue
+		}
+
 		// Keep record even if not in current fetch
 		records = append(records, JobRecord{
 			Job:       Job{ID: id},
@@ -393,6 +412,7 @@ func main() {
 
 					if score >= cfg.AI.Threshold {
 						// ENRICHMENT STEP: If very high score (e.g. >= 90), try to find recruiters
+						// Just show their LinkedIn profile link, no fancy email guessing (user request)
 						recruiterMsg := ""
 						if score >= 85 {
 							enrich := EnrichJob(job)
@@ -403,7 +423,7 @@ func main() {
 								}
 							}
 							if enrich.CompanyInfo != "" {
-								recruiterMsg += fmt.Sprintf("\n🏢 **Context**: [Google Search](%s)", enrich.CompanyInfo)
+								recruiterMsg += fmt.Sprintf("\n🏢 **Background**: [Google Search](%s)", enrich.CompanyInfo)
 							}
 						}
 

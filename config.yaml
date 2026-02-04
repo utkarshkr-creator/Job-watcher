@@ -124,6 +124,6 @@ sources:
 # AI Resume Matching (Optional)
 ai:
   enabled: true
-  model: "gemma3:4b"  # Run 'ollama pull gemma3:4b' if needed
+  model: "llama3.1:latest"  # Run 'ollama pull llama3.1:latest' if needed
   threshold: 70       # Only notify if score >= 70
 

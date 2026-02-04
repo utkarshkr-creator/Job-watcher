@@ -136,6 +136,154 @@ var companyCareerPages = []CompanyCareer{
 	{Name: "Salesforce India", URL: "https://careers.salesforce.com/en/jobs/?country=India", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "ServiceNow", URL: "https://careers.servicenow.com/", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Workday", URL: "https://www.workday.com/en-us/company/careers/open-positions.html", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Intuit", URL: "https://jobs.intuit.com/search-jobs/India/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Expedia", URL: "https://expediagroup.careers/search-jobs/India/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Goldman Sachs", URL: "https://www.goldmansachs.com/careers/search-results?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Morgan Stanley", URL: "https://www.morganstanley.com/careers/career-opportunities-search?l=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Samsung Research", URL: "https://www.samsung.com/in/about-us/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Batch 2 Additions ==========
+	{Name: "Walmart Global Tech", URL: "https://careers.walmart.com/results?q=&page=1&sort=rank&expand=department,brand,type,rate&jobCity=Bengaluru&jobState=Karnataka&jobCountry=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Target", URL: "https://jobs.target.com/search-jobs/India/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Dell", URL: "https://jobs.dell.com/search-jobs/India/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Wells Fargo", URL: "https://www.wellsfargojobs.com/en/search-jobs/?search=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Mastercard", URL: "https://mastercard.wd1.myworkdayjobs.com/MastercardCareers?locationCountry=db69eabc446c11de98360015c5e6daf6", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Batch 3 Additions ==========
+	{Name: "JPMorgan Chase", URL: "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/reqs/?location=India&locationId=300000000184406", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "American Express", URL: "https://aexp.eightfold.ai/careers?location=India&pid=563236340456&domain=aexp.com&sort_by=relevance", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Visa", URL: "https://www.visa.co.in/careers/job-opportunities.html", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Fidelity Investments", URL: "https://jobs.fidelity.com/location/india-jobs/206/33/2", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Nutanix", URL: "https://www.nutanix.com/company/careers/job-search?country=India", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Hardware / Systems / Storage ==========
+	{Name: "AMD", URL: "https://careers.amd.com/careers-home/jobs?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Texas Instruments", URL: "https://careers.ti.com/search-jobs/?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Juniper Networks", URL: "https://careers.juniper.net/careers/search-jobs?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "NetApp", URL: "https://careers.netapp.com/job-search-results/?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Arista Networks", URL: "https://careers.arista.com/jobs?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Western Digital", URL: "https://careers.westerndigital.com/jobs?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Micron Technology", URL: "https://people.micron.com/careers/jobs?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Cloud / Security / Ent. Software ==========
+	{Name: "Zscaler", URL: "https://careers.zscaler.com/jobs?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Rubrik", URL: "https://rubrik.com/company/careers/open-positions?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Cohesity", URL: "https://careers.cohesity.com/open-positions?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Akamai", URL: "https://careers.akamai.com/jobs?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Citrix", URL: "https://careers.cloud.com/jobs?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Tesco Technology", URL: "https://www.tesco-careers.com/search-and-apply/?location=Bengaluru", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Industrial / Retail / Auto R&D ==========
+	{Name: "Nokia", URL: "https://www.nokia.com/about-us/careers/student-and-graduate-opportunities/?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Ericsson", URL: "https://www.ericsson.com/en/careers/job-opportunities?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Siemens", URL: "https://jobs.siemens.com/careers?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Philips", URL: "https://www.careers.philips.com/global/en/search-results?keywords=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "GE Healthcare", URL: "https://jobs.gecareers.com/global/en/search-results?keywords=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Mercedes-Benz R&D", URL: "https://group.mercedes-benz.com/careers/job-search/?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Bosch", URL: "https://jobs.bosch.com/en/?country=in", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== High Growth Startups (Batch 5) ==========
+	{Name: "Zepto", URL: "https://zeptonow.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Blinkit", URL: "https://blinkit.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Navi", URL: "https://navi.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Pine Labs", URL: "https://www.pinelabs.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Delhivery", URL: "https://www.delhivery.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "LambdaTest", URL: "https://www.lambdatest.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Whatfix", URL: "https://whatfix.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Games24x7", URL: "https://www.games24x7.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Ather Energy", URL: "https://www.atherenergy.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Cult.fit", URL: "https://www.cult.fit/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "PhysicsWallah", URL: "https://www.pw.live/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Established Tech / SEA Giants (Batch 6) ==========
+	{Name: "NoBroker", URL: "https://www.nobroker.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Licious", URL: "https://www.licious.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "CarDekho", URL: "https://www.cardekho.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "MapmyIndia", URL: "https://www.mapmyindia.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Tata 1mg", URL: "https://www.1mg.com/jobs", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "BigBasket", URL: "https://www.bigbasket.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "BookMyShow", URL: "https://in.bookmyshow.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "MakeMyTrip", URL: "https://careers.makemytrip.com/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Grab", URL: "https://grab.careers/jobs/?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Gojek", URL: "https://www.gojek.io/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Specialized Tech / FinTech / Unicorns (Batch 7) ==========
+	{Name: "Thoughtworks", URL: "https://www.thoughtworks.com/careers/jobs", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "EPAM Systems", URL: "https://www.epam.com/careers/job-listings?country=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Zeta Suite", URL: "https://www.zeta.tech/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Innovaccer", URL: "https://innovaccer.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Juspay", URL: "https://juspay.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "OfBusiness", URL: "https://ofbusiness.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Mobile Premier League (MPL)", URL: "https://mpl.live/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "PharmEasy", URL: "https://pharmeasy.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Trellix", URL: "https://www.trellix.com/en-us/about/careers.html", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "BlackRock", URL: "https://careers.blackrock.com/search-jobs/India/", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== High Value / HFT / SaaS Unicorns (Batch 8) ==========
+	{Name: "D. E. Shaw", URL: "https://www.deshawindia.com/careers/jobs", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Arcesium", URL: "https://www.arcesium.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Tower Research", URL: "https://www.tower-research.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Media.net", URL: "https://careers.media.net/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Honeywell", URL: "https://careers.honeywell.com/us/en/search-results?keywords=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "UiPath", URL: "https://careers.uipath.com/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Icertis", URL: "https://www.icertis.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "HighRadius", URL: "https://www.highradius.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "MindTickle", URL: "https://www.mindtickle.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Tekion", URL: "https://tekion.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Global Banking / FinTech Giants (Batch 9) ==========
+	{Name: "Bank of America", URL: "https://careers.bankofamerica.com/en-us/job-search?ref=search&country=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Citi", URL: "https://jobs.citi.com/search-jobs/India/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Barclays", URL: "https://search.jobs.barclays/search-jobs/India/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Deutsche Bank", URL: "https://careers.db.com/professionals/search-roles/#/locations=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "UBS", URL: "https://jobs.ubs.com/TGnewUI/Search/Home/Home?partnerid=25008&siteid=5012#", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Standard Chartered", URL: "https://scb.taleo.net/careersection/ex/jobsearch.ftl", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "NatWest Group", URL: "https://jobs.natwestgroup.com/search/jobs/in/india", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "HSBC", URL: "https://mycareer.hsbc.com/en_GB/external/SearchJobs/?21178=%5B20828432%5D", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "BNY Mellon", URL: "https://www.bnymellon.com/us/en/careers/jobs.html", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Fiserv", URL: "https://careers.fiserv.com/search-jobs/India/", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Security / Engineering / Travel Tech (Batch 10) ==========
+	{Name: "Palo Alto Networks", URL: "https://jobs.paloaltonetworks.com/en/jobs/?search=&location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "CrowdStrike", URL: "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers?locationCountry=db69eabc446c11de98360015c5e6daf6", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Okta", URL: "https://www.okta.com/company/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Autodesk", URL: "https://autodesk.wd1.myworkdayjobs.com/Ext/1/search?q=&country=IN", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Synopsys", URL: "https://sub.synopsys.com/job-search-results/?keyword=&location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Cadence Design Systems", URL: "https://cadence.wd1.myworkdayjobs.com/External_Careers?locationCountry=db69eabc446c11de98360015c5e6daf6", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "MathWorks", URL: "https://www.mathworks.com/company/jobs/opportunities/search?q=&location%5B%5D=IN-Bangalore&location%5B%5D=IN-Hyderabad", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Booking.com", URL: "https://jobs.booking.com/careers?query=&location=Bangalore%2C+India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Agoda", URL: "https://careers.agoda.com/jobs?location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Rakuten", URL: "https://careers.rakuten.com/jobs?page=1&locations=India", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian Growth Stage SaaS / Product (Batch 11) ==========
+	{Name: "Sprinklr", URL: "https://careers.sprinklr.com/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "PubMatic", URL: "https://pubmatic.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Amagi", URL: "https://www.amagi.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Gupshup", URL: "https://www.gupshup.io/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "LeadSquared", URL: "https://leadsquared.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Darwinbox", URL: "https://darwinbox.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Shiprocket", URL: "https://www.shiprocket.in/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Turtlemint", URL: "https://www.turtlemint.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Clear (ClearTax)", URL: "https://clear.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Porter", URL: "https://porter.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Retail Tech / Logistics / B2B Unicorns (Batch 12) ==========
+	{Name: "Lowe's India", URL: "https://jobs.lowes.co.in/search-jobs", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Maersk", URL: "https://www.maersk.com/careers/vacancies?country=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "IKEA", URL: "https://jobs.ikea.com/in/en/search-jobs", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Moglix", URL: "https://www.moglix.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Infra.Market", URL: "https://www.infra.market/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Livspace", URL: "https://www.livspace.com/in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "HomeLane", URL: "https://www.homelane.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Open Money", URL: "https://open.money/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Lendingkart", URL: "https://www.lendingkart.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Yubi", URL: "https://www.go-yubi.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	// ========== High Growth / Global Tech (Batch 13) ==========
+	{Name: "Redis", URL: "https://redis.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Serverless", URL: "https://www.serverless.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Brex", URL: "https://www.brex.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Plaid", URL: "https://plaid.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Skyscanner", URL: "https://www.skyscanner.net/jobs", Selector: "a[href*='job']", LinkAttr: "href"},
 }
 
 // Experience keywords to filter out (requires more than 2 years)
