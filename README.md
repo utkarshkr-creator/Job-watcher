@@ -108,7 +108,21 @@ TG_TOKEN=your_telegram_bot_token
 TG_CHAT=your_telegram_chat_id
 ```
 
-### 3. config.yaml
+### 3. Personalization
+
+**This is the most important step!** The default configuration looks for generic software engineering jobs. To find jobs that match YOUR skills and experience, you need to customize it.
+
+📖 **See the full guide: [CUSTOMIZATION.md](CUSTOMIZATION.md)**
+
+**Quick customization checklist:**
+- ✅ Update `keywords` in `config.yaml` with your tech stack (languages, frameworks, tools)
+- ✅ Set your `locations` (cities or "remote")
+- ✅ Adjust `max_experience_years` to match your level
+- ✅ Add `exclude_keywords` to filter out senior roles (if you're a junior/mid-level)
+- ✅ Paste your resume into `resume.txt` (if using AI scoring)
+- ✅ Configure `max_days_old` to ignore old job postings (default: 5 days)
+
+### 4. config.yaml
 
 The `config.yaml` file controls the behavior of the scraper. For a detailed guide on how to personalize this for your specific needs (keywords, experience level, AI matching), please read **[CUSTOMIZATION.md](CUSTOMIZATION.md)**.
 
