@@ -23,6 +23,7 @@ type Config struct {
 	Sources            map[string]bool `yaml:"sources"`
 	AI                 AIConfig        `yaml:"ai"`             // New AI config
 	RetentionDays      int             `yaml:"retention_days"` // Days to keep job history
+	MaxDaysOld         int             `yaml:"max_days_old"`   // Filter jobs older than X days
 }
 
 var cfg Config
@@ -413,25 +414,7 @@ func main() {
 					if score >= cfg.AI.Threshold {
 						// ENRICHMENT STEP: If very high score (e.g. >= 90), try to find recruiters
 						// Just show their LinkedIn profile link, no fancy email guessing (user request)
-						recruiterMsg := ""
-						if score >= 85 {
-							enrich := EnrichJob(job)
-							if len(enrich.Recruiters) > 0 {
-								recruiterMsg += "\n\n👤 **Hiring Team**:"
-								for _, r := range enrich.Recruiters {
-									recruiterMsg += fmt.Sprintf("\n- [%s](%s)", r.Name, r.Profile)
-								}
-							}
-							if enrich.CompanyInfo != "" {
-								recruiterMsg += fmt.Sprintf("\n🏢 **Background**: [Google Search](%s)", enrich.CompanyInfo)
-							}
-						}
-
 						job.Title = fmt.Sprintf("[AI: %d] %s", score, job.Title)
-						// Append enrichment data to link so it shows up in msg
-						if recruiterMsg != "" {
-							job.Link += recruiterMsg
-						}
 
 						results <- job
 					}

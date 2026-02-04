@@ -24,10 +24,10 @@ Job Watcher is a powerful, automated tool designed to help developers find job o
     -   Experience level filtering
     -   Location filtering (Remote/India specific)
     -   Exclusion keywords (avoid senior/manager roles if desired)
--   **AI Scoring**: Integrates with local LLMs (via Ollama) to score jobs based on your resume and preferences.
+    -   Date filtering (ignore old job postings)
+-   **AI Scoring**: Integrates with AI (Ollama or Google Gemini) to score jobs based on your resume and preferences.
 -   **Real-time Alerts**: Sends instant notifications to Telegram with job details and links.
 -   **Deduplication**: Tracks seen jobs to prevent duplicate alerts.
--   **Job Enrichment**: Can fetch additional recruiter details for high-scoring jobs.
 
 ## Prerequisites
 
@@ -54,24 +54,32 @@ Job Watcher is a powerful, automated tool designed to help developers find job o
 
 ### AI Configuration (Optional)
 
-The project uses Ollama to run a local LLM (like Llama 3) to score jobs based on your resume. This helps prioritize the most relevant listings.
+You can use either **Ollama** (local) or **Google Gemini API** (cloud) to score jobs.
 
-**If you don't want to use AI:**
-1.  Open `config.yaml`.
-2.  Set `enabled: false` under the `ai` section:
+#### Option A: Ollama (Local - Free, Private)
+1.  Install [Ollama](https://ollama.com/).
+2.  Pull the model: `ollama pull llama3.1:latest`
+3.  In `config.yaml`:
     ```yaml
     ai:
-      enabled: false
+      enabled: true
+      provider: "ollama"
+      model: "llama3.1:latest"
     ```
-3.  You can skip installing Ollama.
 
-**If you DO want to use AI:**
-1.  Install [Ollama](https://ollama.com/).
-2.  Pull the model specified in `config.yaml` (default `llama3.1:latest`):
+#### Option B: Gemini API (Cloud - Fast, No RAM usage)
+1.  Get a free API Key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+2.  Add it to your `.env` file:
     ```bash
-    ollama pull llama3.1:latest
+    GEMINI_API_KEY=your_api_key_here
     ```
-3.  Ensure `ai.enabled` is set to `true` in `config.yaml`.
+3.  In `config.yaml`:
+    ```yaml
+    ai:
+      enabled: true
+      provider: "gemini"
+      model: "gemini-2.0-flash"
+    ```
 
 ### Configuration
 

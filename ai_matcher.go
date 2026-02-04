@@ -11,9 +11,10 @@ import (
 	"sync"
 )
 
-// AIConfig holds settings for Ollama
+// AIConfig holds settings for AI provider
 type AIConfig struct {
 	Enabled   bool   `yaml:"enabled"`
+	Provider  string `yaml:"provider"` // "ollama" or "gemini"
 	Model     string `yaml:"model"`
 	Threshold int    `yaml:"threshold"` // Score out of 100
 }
@@ -34,6 +35,28 @@ type MatchResult struct {
 	Reason string `json:"reason"`
 }
 
+type GeminiRequest struct {
+	Contents []GeminiContent `json:"contents"`
+}
+
+type GeminiContent struct {
+	Parts []GeminiPart `json:"parts"`
+}
+
+type GeminiPart struct {
+	Text string `json:"text"`
+}
+
+type GeminiResponse struct {
+	Candidates []struct {
+		Content struct {
+			Parts []struct {
+				Text string `json:"text"`
+			} `json:"parts"`
+		} `json:"content"`
+	} `json:"candidates"`
+}
+
 var (
 	resumeText string
 	aiMutex    sync.Mutex
@@ -52,14 +75,8 @@ func loadResume() error {
 	return nil
 }
 
-// scoreJobWithAI sends job title+resume to Ollama
+// scoreJobWithAI sends job details to the configured AI provider
 func scoreJobWithAI(job Job, cfg AIConfig) (int, string, error) {
-	// M3 Pro can handle parallel AI calls, so removed the lock
-	// aiMutex.Lock()
-	// defer aiMutex.Unlock()
-
-	// Use Title and Source for context
-	// Use Title and Source for context
 	prompt := fmt.Sprintf(`Role: Hiring Manager. 
 Task: Evaluate match for a Fresher/Entry-Level Candidate (0-2 YOE).
 
@@ -77,6 +94,13 @@ CRITICAL RULES:
 Constraint: Return ONLY a JSON object with "score" (0-100) and "reason" (short string).
 Example: {"score": 0, "reason": "Senior role (3+ years) not for fresher"}`, resumeText, job.Title, job.Source)
 
+	if strings.ToLower(cfg.Provider) == "gemini" {
+		return callGeminiAI(cfg, prompt)
+	}
+	return callOllama(cfg, prompt)
+}
+
+func callOllama(cfg AIConfig, prompt string) (int, string, error) {
 	reqBody := OllamaRequest{
 		Model:  cfg.Model,
 		Prompt: prompt,
@@ -101,10 +125,63 @@ Example: {"score": 0, "reason": "Senior role (3+ years) not for fresher"}`, resu
 		return 0, "", err
 	}
 
-	// Parse inner JSON from LLM
+	return parseJSONResponse(ollamaResp.Response)
+}
+
+func callGeminiAI(cfg AIConfig, prompt string) (int, string, error) {
+	apiKey := os.Getenv("GEMINI_API_KEY")
+	if apiKey == "" {
+		return 0, "", fmt.Errorf("GEMINI_API_KEY not set")
+	}
+
+	model := cfg.Model
+	if model == "" {
+		model = "gemini-1.5-flash"
+	}
+
+	// Ensure we don't double-prefix if user added "models/"
+	model = strings.TrimPrefix(model, "models/")
+
+	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s", model, apiKey)
+
+	reqBody := GeminiRequest{
+		Contents: []GeminiContent{
+			{
+				Parts: []GeminiPart{
+					{Text: prompt},
+				},
+			},
+		},
+	}
+
+	jsonData, _ := json.Marshal(reqBody)
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return 0, "", fmt.Errorf("gemini connection failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		body, _ := io.ReadAll(resp.Body)
+		return 0, "", fmt.Errorf("gemini error %d: %s", resp.StatusCode, string(body))
+	}
+
+	var geminiResp GeminiResponse
+	if err := json.NewDecoder(resp.Body).Decode(&geminiResp); err != nil {
+		return 0, "", err
+	}
+
+	if len(geminiResp.Candidates) == 0 || len(geminiResp.Candidates[0].Content.Parts) == 0 {
+		return 0, "", fmt.Errorf("empty response from gemini")
+	}
+
+	return parseJSONResponse(geminiResp.Candidates[0].Content.Parts[0].Text)
+}
+
+func parseJSONResponse(raw string) (int, string, error) {
 	var result MatchResult
 	// Sometimes LLMs add markdown code blocks like ```json ... ```
-	cleanResp := strings.TrimSpace(ollamaResp.Response)
+	cleanResp := strings.TrimSpace(raw)
 	cleanResp = strings.TrimPrefix(cleanResp, "```json")
 	cleanResp = strings.TrimSuffix(cleanResp, "```")
 

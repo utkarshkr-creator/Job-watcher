@@ -24,6 +24,23 @@ keywords:
   - developer
   - programmer
   - engineering
+  - backend
+  - backend developer
+  - backend engineer
+  - frontend
+  - frontend developer
+  - frontend engineer
+  - fullstack
+  - junior
+  - junior developer
+  - junior engineer
+  - junior software engineer
+  - junior software developer
+  - junior fullstack
+  - junior full stack
+  - junior full-stack 
+  - full stack
+  - full-stack
   
   # Frontend
   - react
@@ -80,6 +97,9 @@ locations:
 # Max experience - you have ~1 year contract experience
 max_experience_years: 2
 
+# Date Filtering
+max_days_old: 5                 # Ignore jobs older than this (if date available)
+
 # Exclude senior roles
 exclude_keywords:
   - senior
@@ -124,6 +144,7 @@ sources:
 # AI Resume Matching (Optional)
 ai:
   enabled: true
-  model: "llama3.1:latest"  # Run 'ollama pull llama3.1:latest' if needed
+  provider: "gemini"  # Options: "ollama", "gemini"
+  model: "gemini-2.0-flash"  # For Ollama: "llama3", for Gemini: "gemini-2.0-flash"
   threshold: 70       # Only notify if score >= 70
 

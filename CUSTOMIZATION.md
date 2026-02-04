@@ -42,14 +42,22 @@ locations:
 -   **`exclude_keywords`**: Removes roles that are too senior. If you are a fresher, keep "Senior", "Lead", "Principal" here. If you are a Senior, remove them!
 
 ## 4. AI Matching (The "Smart" Part)
-**File:** `resume.txt`
+**File:** `resume.txt` & `config.yaml`
 
 If you enabled AI in `config.yaml`, the system reads `resume.txt` to understand *who you are*.
 
+**Choosing a Provider:**
+-   **Ollama**: Runs locally. Good for privacy. Needs 8GB+ RAM.
+-   **Gemini**: Runs in cloud. Fast & lightweight. Needs API Key.
+
+**How to get a Gemini API Key:**
+1.  Go to [Google AI Studio](https://aistudio.google.com/app/apikey).
+2.  Click **Create API Key**.
+3.  Copy the key and add it to your `.env` file: `GEMINI_API_KEY=your_key`
+
 **Action:**
-1.  Open `resume.txt`.
-2.  Paste the text content of your actual resume there.
-3.  The AI will now compare every new job description against YOUR resume text to give it a relevance score (0-100).
+1.  Open `resume.txt` and paste your resume text.
+2.  In `config.yaml`, set `provider` to either `"ollama"` or `"gemini"`.
 
 ## 5. Enabling/Disabling Sources
 **File:** `config.yaml` -> `sources`
@@ -62,8 +70,27 @@ sources:
   hnjobs: false  # Disabled
 ```
 
-## Summary Checklist
-- [ ] Updated `keywords` in `config.yaml`?
-- [ ] Updated `locations` in `config.yaml`?
-- [ ] Pasted my resume into `resume.txt`?
-- [ ] Set my `TG_TOKEN` in `.env`?
+## 6. Date Filtering
+You can filter out old jobs (only for sources that provide dates, like RemoteOK).
+
+In `config.yaml`:
+```yaml
+# Date Filtering
+max_days_old: 5   # Jobs older than 5 days will be ignored
+```
+*Note: Scraped sites (career pages) often don't provide reliable dates, so they may default to "new".*
+
+## 7. Adding New Companies
+To add more career pages to scrape:
+
+1.  Open `companies.go`.
+2.  Scroll to the `companyCareerPages` list.
+3.  Add a new entry:
+    ```go
+    {Name: "NewCompany", URL: "https://company.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+    ```
+    -   **Selector**: The CSS selector to find the job link (e.g., `a.job-link`).
+    -   **LinkAttr**: The attribute containing the URL (usually `href`).
+
+## 8. Advanced Constraints
+You can tweak hardcoded constraints in `filter.go` or `main.go` if you know Go.

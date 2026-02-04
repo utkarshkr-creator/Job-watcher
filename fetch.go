@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type Job struct {
-	ID     string `json:"id"`
-	Title  string `json:"title"`
-	Link   string `json:"link"`
-	Source string `json:"source,omitempty"`
+	ID     string    `json:"id"`
+	Title  string    `json:"title"`
+	Link   string    `json:"link"`
+	Source string    `json:"source,omitempty"`
+	Date   time.Time `json:"date,omitempty"` // For date filtering
 }
 
 func fetchJobs() ([]Job, error) {
@@ -61,8 +63,23 @@ func fetchJobs() ([]Job, error) {
 			Title:  j["position"].(string),
 			Link:   link,
 			Source: "RemoteOK",
+			Date:   parseRemoteOKDate(j["date"]),
 		})
 	}
 
 	return jobs, nil
+}
+
+func parseRemoteOKDate(v interface{}) time.Time {
+	if str, ok := v.(string); ok {
+		// RemoteOK usually sends ISO strings like "2023-10-25T..."
+		if t, err := time.Parse(time.RFC3339, str); err == nil {
+			return t
+		}
+		// Fallback for simple dates YYYY-MM-DD
+		if t, err := time.Parse("2006-01-02", str); err == nil {
+			return t
+		}
+	}
+	return time.Time{} // Zero value if parsing fails
 }

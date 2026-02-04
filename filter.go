@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var (
@@ -11,6 +12,7 @@ var (
 	locations       []string
 	excludeKeywords []string
 	maxExpYears     int
+	maxDaysOld      int
 )
 
 // Experience patterns to detect years of experience
@@ -25,6 +27,7 @@ func initFilters(cfg Config) {
 	locations = cfg.Locations
 	excludeKeywords = cfg.ExcludeKeywords
 	maxExpYears = cfg.MaxExperienceYears
+	maxDaysOld = cfg.MaxDaysOld // Use the dedicated config field
 
 	// Default to 2 years if not set (suitable for 1 year experience)
 	if maxExpYears == 0 {
@@ -99,6 +102,11 @@ func isEligibleJob(job Job) bool {
 		return false
 	}
 
+	// Date filter (if available)
+	if !isRecentJob(job.Date) {
+		return false
+	}
+
 	// Check experience requirement if detectable
 	expYears := extractExperience(combined)
 	if expYears > maxExpYears {
@@ -116,6 +124,16 @@ func isEligibleJob(job Job) bool {
 	}
 
 	return true
+}
+
+// isRecentJob checks if job is within maxDaysOld
+func isRecentJob(date time.Time) bool {
+	if maxDaysOld <= 0 || date.IsZero() {
+		return true // No filter or no date available
+	}
+	// Check if date is after (Now - maxDaysOld)
+	cutoff := time.Now().AddDate(0, 0, -maxDaysOld)
+	return date.After(cutoff)
 }
 
 // Legacy function for compatibility
