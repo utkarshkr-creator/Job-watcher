@@ -157,6 +157,29 @@ Key sections include:
     ollama pull llama3.1:latest
     ```
 
+## Automated Running (GitHub Actions)
+
+Want the job watcher to run automatically every hour without keeping your computer on? Use GitHub Actions!
+
+1.  **Add GitHub Secrets**:
+    -   Go to your repository **Settings** → **Secrets and variables** → **Actions**
+    -   Add these repository secrets:
+        -   `TG_TOKEN` - Your Telegram bot token
+        -   `TG_CHAT` - Your Telegram chat ID
+        -   `GEMINI_API_KEY` - Your Gemini API key (if using AI scoring)
+
+2.  **The workflow is already set up** in [`.github/workflows/job-watcher.yml`](.github/workflows/job-watcher.yml)
+    -   Runs automatically every hour
+    -   Completely free on public repositories
+    -   You can also trigger it manually from the **Actions** tab
+
+3.  **Verify it's working**:
+    -   Check the **Actions** tab in your repository
+    -   View run history and logs
+    -   Job notifications will be sent to your Telegram
+
+**Free Tier**: Public repos get unlimited minutes. Private repos get 2,000 free minutes/month (more than enough for hourly runs).
+
 ## Contributing
 
 We welcome contributions! Please see **[CONTRIBUTING.md](CONTRIBUTING.md)** for details on how to submit pull requests, report issues, and follows our code style.
