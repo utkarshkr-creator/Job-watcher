@@ -2,7 +2,9 @@
 .env
 
 # Binary
+job-watcher
 jobs.json
-
 resume.pdf
 resume.txt
+
+
