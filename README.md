@@ -167,6 +167,7 @@ Want the job watcher to run automatically every hour without keeping your comput
         -   `TG_TOKEN` - Your Telegram bot token
         -   `TG_CHAT` - Your Telegram chat ID
         -   `GEMINI_API_KEY` - Your Gemini API key (if using AI scoring)
+        -   `RESUME_TEXT` - Your full resume content (required for AI matching)
 
 2.  **The workflow is already set up** in [`.github/workflows/job-watcher.yml`](.github/workflows/job-watcher.yml)
     -   Runs automatically every hour
@@ -178,7 +179,9 @@ Want the job watcher to run automatically every hour without keeping your comput
     -   View run history and logs
     -   Job notifications will be sent to your Telegram
 
-**Deduplication**: The workflow automatically commits `jobs.json` after each run to track previously seen jobs. You'll see commits from `github-actions[bot]` - this is normal and prevents duplicate notifications.
+**Deduplication**: The workflow automatically creates and commits `jobs.json` after each run to track previously seen jobs. You'll see commits from `github-actions[bot]` - this prevents duplicate notifications.
+
+**Resume Privacy**: Use the `RESUME_TEXT` secret to keep your resume private while enabling AI matching.
 
 **Free Tier**: Public repos get unlimited minutes. Private repos get 2,000 free minutes/month (more than enough for hourly runs).
 

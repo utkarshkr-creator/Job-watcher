@@ -34,6 +34,15 @@ jobs:
       - name: Download dependencies
         run: go mod download
       
+      - name: Create resume.txt (if using AI matching)
+        run: |
+          if [ -n "${{ secrets.RESUME_TEXT }}" ]; then
+            echo "${{ secrets.RESUME_TEXT }}" > resume.txt
+            echo "✓ Resume loaded from GitHub Secret"
+          else
+            echo "⚠️ RESUME_TEXT secret not set - AI matching will be skipped"
+          fi
+      
       - name: Create .env file
         run: |
           echo "TG_TOKEN=${{ secrets.TG_TOKEN }}" >> .env
@@ -46,6 +55,14 @@ jobs:
           TG_TOKEN: ${{ secrets.TG_TOKEN }}
           TG_CHAT: ${{ secrets.TG_CHAT }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      
+      - name: Commit updated jobs.json
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add jobs.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update jobs.json - $(date +'%Y-%m-%d %H:%M UTC')"
+          git push
       
       - name: Upload jobs.json artifact
         uses: actions/upload-artifact@v4
