@@ -178,6 +178,8 @@ Want the job watcher to run automatically every hour without keeping your comput
     -   View run history and logs
     -   Job notifications will be sent to your Telegram
 
+**Deduplication**: The workflow automatically commits `jobs.json` after each run to track previously seen jobs. You'll see commits from `github-actions[bot]` - this is normal and prevents duplicate notifications.
+
 **Free Tier**: Public repos get unlimited minutes. Private repos get 2,000 free minutes/month (more than enough for hourly runs).
 
 ## Contributing
