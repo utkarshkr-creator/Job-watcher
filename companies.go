@@ -284,6 +284,22 @@ var companyCareerPages = []CompanyCareer{
 	{Name: "Brex", URL: "https://www.brex.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Plaid", URL: "https://plaid.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Skyscanner", URL: "https://www.skyscanner.net/jobs", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Remote-First Global Companies (Batch 14) ==========
+	{Name: "Automattic", URL: "https://automattic.com/work-with-us/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Articulate", URL: "https://articulate.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Astronomer", URL: "https://www.astronomer.io/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Appinio", URL: "https://appinio.com/en/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Applaudo Studios", URL: "https://applaudostudios.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Argyle", URL: "https://argyle.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Arkency", URL: "https://arkency.com/join-our-team/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Artefactual", URL: "https://www.artefactual.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Audiense", URL: "https://audiense.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Aula Education", URL: "https://aula.education/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Auth0", URL: "https://www.okta.com/company/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Axelerant", URL: "https://www.axelerant.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Axios HQ", URL: "https://www.axioshq.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Appwrite", URL: "https://appwrite.io/careers", Selector: "a[href*='job']", LinkAttr: "href"},
 }
 
 // Experience keywords to filter out (requires more than 2 years)
