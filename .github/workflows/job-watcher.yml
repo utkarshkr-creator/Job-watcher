@@ -1,0 +1,56 @@
+name: Job Watcher
+
+on:
+  schedule:
+    # Runs every hour at the start of the hour (UTC time)
+    - cron: '0 * * * *'
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  run-watcher:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+      
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      
+      - name: Download dependencies
+        run: go mod download
+      
+      - name: Create .env file
+        run: |
+          echo "TG_TOKEN=${{ secrets.TG_TOKEN }}" >> .env
+          echo "TG_CHAT=${{ secrets.TG_CHAT }}" >> .env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+      
+      - name: Run Job Watcher
+        run: go run .
+        env:
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT: ${{ secrets.TG_CHAT }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      
+      - name: Upload jobs.json artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jobs-${{ github.run_number }}
+          path: jobs.json
+          retention-days: 7
