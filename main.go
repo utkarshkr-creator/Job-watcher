@@ -184,12 +184,6 @@ func sendTelegram(msg string) {
 }
 
 func main() {
-	// Check for test mode
-	if len(os.Args) > 1 && os.Args[1] == "--test-sources" {
-		testSources()
-		return
-	}
-
 	// Load .env file for Telegram credentials
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("Note: No .env file found, using environment variables")
