@@ -78,9 +78,9 @@ func scrapeLinkedInSearch(search LinkedInSearch) ([]Job, error) {
 	req.Header.Set("Sec-Fetch-User", "?1")
 	req.Header.Set("Upgrade-Insecure-Requests", "1")
 
-	// Use a client with timeout
+	// Use a client with timeout - reduced from 30s to 15s
 	client := &http.Client{
-		Timeout: 30 * time.Second,
+		Timeout: 15 * time.Second,
 	}
 
 	resp, err := client.Do(req)

@@ -543,126 +543,135 @@ func hasEntryLevelIndicator(title string) bool {
 
 // fetchCompanyJobs fetches jobs from a single company career page
 func fetchCompanyJobs(company CompanyCareer) ([]Job, error) {
-	req, err := http.NewRequest("GET", company.URL, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
-	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
-
-	client := &http.Client{
-		Timeout: 20 * time.Second, // Reduced timeout per request
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("status %d", resp.StatusCode)
-	}
-
-	body, _ := io.ReadAll(resp.Body)
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(body)))
-	if err != nil {
-		return nil, err
-	}
-
-	var jobs []Job
-	seen := make(map[string]bool)
-	
-	// Better job ID regex - handles more URL patterns
-	jobIDRegex := regexp.MustCompile(`(?:jobs?|careers?|opportunities?|vacancies?)[/-]([a-zA-Z0-9_-]+)(?:[/-]|$)`)
-	
-	// Alternative ID extraction - use last path segment
-	lastPathRegex := regexp.MustCompile(`[^/]+$`)
-
-	doc.Find(company.Selector).Each(func(i int, s *goquery.Selection) {
-		link, exists := s.Attr(company.LinkAttr)
-		if !exists || link == "" {
-			return
+	// Retry up to 2 times for transient failures
+	for attempt := 0; attempt < 2; attempt++ {
+		req, err := http.NewRequest("GET", company.URL, nil)
+		if err != nil {
+			return []Job{}, nil
 		}
 
-		// Skip empty or invalid links
-		link = strings.TrimSpace(link)
-		if strings.HasPrefix(link, "#") || strings.HasPrefix(link, "javascript:") {
-			return
+		req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
+		req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+		req.Header.Set("Accept-Language", "en-US,en;q=0.9")
+
+		// Reduced timeout for faster failure on unreachable sites
+		client := &http.Client{
+			Timeout: 10 * time.Second, // Reduced from 20s to 10s
+		}
+		resp, err := client.Do(req)
+		if err != nil {
+			if attempt < 1 {
+				continue // Retry
+			}
+			return []Job{}, nil
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			return []Job{}, nil
 		}
 
-		// Get title - try multiple strategies
-		title := strings.TrimSpace(s.Text())
+		body, _ := io.ReadAll(resp.Body)
+		doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(body)))
+		if err != nil {
+			return []Job{}, nil
+		}
+
+		var jobs []Job
+		seen := make(map[string]bool)
 		
-		// If direct text is empty or too long, try nested elements
-		if title == "" || len(title) > 200 {
-			title = s.Find("h1, h2, h3, h4, h5, span, .title, .job-title, .position-title").First().Text()
-			title = strings.TrimSpace(title)
-		}
+		// Better job ID regex - handles more URL patterns
+		jobIDRegex := regexp.MustCompile(`(?:jobs?|careers?|opportunities?|vacancies?)[/-]([a-zA-Z0-9_-]+)(?:[/-]|$)`)
+		
+		// Alternative ID extraction - use last path segment
+		lastPathRegex := regexp.MustCompile(`[^/]+$`)
 
-		// Skip if still empty or too long
-		if title == "" || len(title) > 200 {
-			return
-		}
+		doc.Find(company.Selector).Each(func(i int, s *goquery.Selection) {
+			link, exists := s.Attr(company.LinkAttr)
+			if !exists || link == "" {
+				return
+			}
 
-		// Skip if already seen
-		if seen[link] {
-			return
-		}
-		seen[link] = true
+			// Skip empty or invalid links
+			link = strings.TrimSpace(link)
+			if strings.HasPrefix(link, "#") || strings.HasPrefix(link, "javascript:") {
+				return
+			}
 
-		// EXPERIENCE FILTER: Skip senior/experienced roles
-		if !isEntryLevelJob(title) {
-			return
-		}
+			// Get title - try multiple strategies
+			title := strings.TrimSpace(s.Text())
+			
+			// If direct text is empty or too long, try nested elements
+			if title == "" || len(title) > 200 {
+				title = s.Find("h1, h2, h3, h4, h5, span, .title, .job-title, .position-title").First().Text()
+				title = strings.TrimSpace(title)
+			}
 
-		// Make absolute URL
-		if !strings.HasPrefix(link, "http") {
-			baseURL := company.URL
-			if idx := strings.Index(baseURL, "//"); idx > 0 {
-				if endIdx := strings.Index(baseURL[idx+2:], "/"); endIdx > 0 {
-					baseURL = baseURL[:idx+2+endIdx]
+			// Skip if still empty or too long
+			if title == "" || len(title) > 200 {
+				return
+			}
+
+			// Skip if already seen
+			if seen[link] {
+				return
+			}
+			seen[link] = true
+
+			// EXPERIENCE FILTER: Skip senior/experienced roles
+			if !isEntryLevelJob(title) {
+				return
+			}
+
+			// Make absolute URL
+			if !strings.HasPrefix(link, "http") {
+				baseURL := company.URL
+				if idx := strings.Index(baseURL, "//"); idx > 0 {
+					if endIdx := strings.Index(baseURL[idx+2:], "/"); endIdx > 0 {
+						baseURL = baseURL[:idx+2+endIdx]
+					}
+				}
+				link = baseURL + link
+			}
+
+			// Extract job ID - try multiple strategies
+			jobID := ""
+			
+			// Strategy 1: Use regex to find job ID in URL
+			if matches := jobIDRegex.FindStringSubmatch(link); len(matches) > 1 {
+				jobID = matches[1]
+			}
+			
+			// Strategy 2: Use last path segment
+			if jobID == "" {
+				if matches := lastPathRegex.FindStringSubmatch(link); len(matches) > 0 {
+					jobID = matches[0]
 				}
 			}
-			link = baseURL + link
-		}
-
-		// Extract job ID - try multiple strategies
-		jobID := ""
-		
-		// Strategy 1: Use regex to find job ID in URL
-		if matches := jobIDRegex.FindStringSubmatch(link); len(matches) > 1 {
-			jobID = matches[1]
-		}
-		
-		// Strategy 2: Use last path segment
-		if jobID == "" {
-			if matches := lastPathRegex.FindStringSubmatch(link); len(matches) > 0 {
-				jobID = matches[0]
+			
+			// Strategy 3: Use hash if still no ID
+			if jobID == "" {
+				hash := sha256.Sum256([]byte(link))
+				jobID = hex.EncodeToString(hash[:])[:12]
 			}
-		}
-		
-		// Strategy 3: Use hash if still no ID
-		if jobID == "" {
-			hash := sha256.Sum256([]byte(link))
-			jobID = hex.EncodeToString(hash[:])[:12]
-		}
 
-		// Clean job ID - remove special characters
-		jobID = strings.ReplaceAll(jobID, "/", "")
-		jobID = strings.ReplaceAll(jobID, "?", "")
-		jobID = strings.ReplaceAll(jobID, "#", "")
+			// Clean job ID - remove special characters
+			jobID = strings.ReplaceAll(jobID, "/", "")
+			jobID = strings.ReplaceAll(jobID, "?", "")
+			jobID = strings.ReplaceAll(jobID, "#", "")
 
-		jobs = append(jobs, Job{
-			ID:     fmt.Sprintf("%s-%s", strings.ToLower(strings.ReplaceAll(company.Name, " ", "")), jobID),
-			Title:  fmt.Sprintf("%s @ %s", title, company.Name),
-			Link:   link,
-			Source: company.Name,
+			jobs = append(jobs, Job{
+				ID:     fmt.Sprintf("%s-%s", strings.ToLower(strings.ReplaceAll(company.Name, " ", "")), jobID),
+				Title:  fmt.Sprintf("%s @ %s", title, company.Name),
+				Link:   link,
+				Source: company.Name,
+			})
 		})
-	})
 
-	return jobs, nil
+		return jobs, nil
+	}
+
+	return []Job{}, nil
 }
 
 // fetchAllCompanyJobsParallel fetches from all company career pages in parallel
@@ -671,8 +680,8 @@ func fetchAllCompanyJobsParallel() ([]Job, error) {
 	var mu sync.Mutex
 	var wg sync.WaitGroup
 
-	// Limit concurrency to avoid rate limiting
-	semaphore := make(chan struct{}, 10) // Max 10 concurrent requests
+	// Reduced concurrency to avoid overwhelming the network
+	semaphore := make(chan struct{}, 5) // Max 5 concurrent requests (was 10)
 
 	fmt.Println("  📋 Scanning company career pages...")
 	

@@ -20,7 +20,7 @@ func fetchJobs() ([]Job, error) {
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
 
 	client := &http.Client{
-		Timeout: 30 * time.Second,
+		Timeout: 15 * time.Second, // Reduced from 30s to 15s
 	}
 	resp, err := client.Do(req)
 	if err != nil {
