@@ -23,14 +23,79 @@ type InstahyreResponse struct {
 func fetchInstahyreJobs() ([]Job, error) {
 	var allJobs []Job
 
-	// Instahyre has a public API for job search
+	// Try multiple API endpoints for Instahyre
+	// Endpoint 1: Search API
+	searchURL := "https://www.instahyre.com/api/search/jobs/?experience=0-2&page=1"
+	
+	req, _ := http.NewRequest("GET", searchURL, nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
+	req.Header.Set("Accept", "application/json, text/plain, */*")
+	req.Header.Set("Referer", "https://www.instahyre.com/")
+	req.Header.Set("X-Requested-With", "XMLHttpRequest")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Printf("  Instahyre API error: %v\n", err)
+		return []Job{}, nil
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		fmt.Printf("  Instahyre API returned status %d\n", resp.StatusCode)
+		// Try alternative endpoint
+		return fetchInstahyreAlternative()
+	}
+
+	var data InstahyreResponse
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		fmt.Printf("  Instahyre JSON parse error: %v\n", err)
+		return fetchInstahyreAlternative()
+	}
+
+	for _, j := range data.Jobs {
+		title := j.Title
+		if j.Company != "" {
+			title = fmt.Sprintf("%s @ %s", j.Title, j.Company)
+		}
+		if j.Location != "" {
+			title = fmt.Sprintf("%s (%s)", title, j.Location)
+		}
+
+		slug := j.Slug
+		if slug == "" {
+			slug = fmt.Sprintf("%d", j.ID)
+		}
+
+		allJobs = append(allJobs, Job{
+			ID:     fmt.Sprintf("instahyre-%d", j.ID),
+			Title:  title,
+			Link:   fmt.Sprintf("https://www.instahyre.com/job/%s/", slug),
+			Source: "Instahyre",
+		})
+	}
+
+	// Deduplicate
+	seen := make(map[string]bool)
+	var unique []Job
+	for _, j := range allJobs {
+		if !seen[j.ID] {
+			seen[j.ID] = true
+			unique = append(unique, j)
+		}
+	}
+
+	return unique, nil
+}
+
+func fetchInstahyreAlternative() ([]Job, error) {
+	// Try the opportunities endpoint with different parameters
 	searches := []string{
 		"software-engineer",
 		"backend-developer",
 		"full-stack-developer",
-		"frontend-developer",
 	}
 
+	var allJobs []Job
 	for _, search := range searches {
 		url := fmt.Sprintf("https://www.instahyre.com/api/v1/candidate/opportunities/?job_type=%s&experience=0-1", search)
 
@@ -73,17 +138,7 @@ func fetchInstahyreJobs() ([]Job, error) {
 		}
 	}
 
-	// Deduplicate
-	seen := make(map[string]bool)
-	var unique []Job
-	for _, j := range allJobs {
-		if !seen[j.ID] {
-			seen[j.ID] = true
-			unique = append(unique, j)
-		}
-	}
-
-	return unique, nil
+	return allJobs, nil
 }
 
 // fetchHiristJobs fetches from Hirist (another India-focused job board)

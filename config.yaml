@@ -138,13 +138,13 @@ sources:
   ycjobs: true      # YCombinator startup jobs (workatastartup.com)
   hnjobs: true      # Hacker News "Who's Hiring" threads
   reddit: true      # r/cscareerquestions, r/forhire
-  triplebyte: true  # Triplebyte/Karat pre-screened jobs
+  triplebyte: false # Triplebyte/Karat - limited public access, often fails
   sharedlists: true # Google Sheets & GitHub Hiring Tables
 
 # AI Resume Matching (Optional)
 ai:
   enabled: true
-  provider: "gemini"  # Options: "ollama", "gemini"
-  model: "gemini-2.0-flash"  # For Ollama: "llama3", for Gemini: "gemini-2.0-flash"
+  provider: "ollama"  # Options: "ollama", "gemini"
+  model: "llama3"  # For Ollama: "llama3", for Gemini: "gemini-2.0-flash"
   threshold: 70       # Only notify if score >= 70
 

@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -27,11 +28,11 @@ var companyCareerPages = []CompanyCareer{
 	{Name: "Razorpay", URL: "https://razorpay.com/jobs/", Selector: "a[href*='/jobs/']", LinkAttr: "href"},
 	{Name: "Zerodha", URL: "https://zerodha.com/careers/", Selector: "a[href*='careers']", LinkAttr: "href"},
 	{Name: "PhonePe", URL: "https://www.phonepe.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
-	{Name: "Flipkart", URL: "https://www.flipkartcareers.com/#!/joblist", Selector: "a[href*='job']", LinkAttr: "href"},
-	{Name: "Swiggy", URL: "https://careers.swiggy.com/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Flipkart", URL: "https://www.flipkartcareers.com/#!/joblist?job_type=Full%20Time", Selector: "a[href*='job'], .job-title", LinkAttr: "href"},
+	{Name: "Swiggy", URL: "https://careers.swiggy.com/opportunities", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Zomato", URL: "https://www.zomato.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "CRED", URL: "https://careers.cred.club/", Selector: "a[href*='job']", LinkAttr: "href"},
-	{Name: "Meesho", URL: "https://careers.meesho.com/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Meesho", URL: "https://careers.meesho.com/jobs", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Groww", URL: "https://groww.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Paytm", URL: "https://jobs.lever.co/paytm", Selector: "a.posting-title", LinkAttr: "href"},
 	{Name: "Ola", URL: "https://www.olacabs.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
@@ -119,12 +120,12 @@ var companyCareerPages = []CompanyCareer{
 	// ========== Big Tech India ==========
 	{Name: "Google India", URL: "https://careers.google.com/jobs/results/?location=India&q=software%20engineer", Selector: "a[href*='jobs']", LinkAttr: "href"},
 	{Name: "Microsoft India", URL: "https://careers.microsoft.com/us/en/search-results?keywords=software%20engineer&location=India", Selector: "a[href*='job']", LinkAttr: "href"},
-	{Name: "Amazon India", URL: "https://www.amazon.jobs/en/locations/india", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Amazon India", URL: "https://www.amazon.jobs/en/search?base_query=software%20development%20engineer&loc_query=India", Selector: "a.job-link", LinkAttr: "href"},
 	{Name: "Meta India", URL: "https://www.metacareers.com/jobs?offices[0]=Bengaluru%2C%20India", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Apple India", URL: "https://jobs.apple.com/en-in/search?location=india", Selector: "a[href*='job']", LinkAttr: "href"},
-	{Name: "Adobe India", URL: "https://www.adobe.com/careers/india.html", Selector: "a[href*='job']", LinkAttr: "href"},
-	{Name: "Oracle India", URL: "https://www.oracle.com/in/corporate/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
-	{Name: "SAP India", URL: "https://jobs.sap.com/search/?q=&locationsearch=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Adobe India", URL: "https://careers.adobe.com/us/en/search-results?keywords=software", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Oracle India", URL: "https://careers.oracle.com/jobs/#en/sites/jobsearch/requisitions?keyword=software&location=India", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "SAP India", URL: "https://jobs.sap.com/search/?q=software&locationsearch=India", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "IBM India", URL: "https://www.ibm.com/in-en/employment/", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Intel India", URL: "https://jobs.intel.com/en/search-jobs/India", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Nvidia India", URL: "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite?locationCountry=c4f78be1a8f14da0ab49ce1162348a5e", Selector: "a[href*='job']", LinkAttr: "href"},
@@ -300,6 +301,198 @@ var companyCareerPages = []CompanyCareer{
 	{Name: "Axelerant", URL: "https://www.axelerant.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Axios HQ", URL: "https://www.axioshq.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
 	{Name: "Appwrite", URL: "https://appwrite.io/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian Fintech Startups (Batch 15) ==========
+	{Name: "Razorpay Capital", URL: "https://razorpay.com/jobs/", Selector: "a[href*='/jobs/']", LinkAttr: "href"},
+	{Name: "BharatPe", URL: "https://bharatpe.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Cred Mint", URL: "https://careers.cred.club/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Jar", URL: "https://jar.app/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Fi Money", URL: "https://fi.money/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Niyo", URL: "https://www.goniyo.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Kuvera", URL: "https://kuvera.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Smallcase", URL: "https://smallcase.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Scripbox", URL: "https://scripbox.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Wint Wealth", URL: "https://wintwealth.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian SaaS Startups (Batch 16) ==========
+	{Name: "Postman Labs", URL: "https://www.postman.com/company/careers/open-positions/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Razorpay X", URL: "https://razorpay.com/jobs/", Selector: "a[href*='/jobs/']", LinkAttr: "href"},
+	{Name: "Exotel", URL: "https://exotel.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Haptik", URL: "https://haptik.ai/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Yellow.ai", URL: "https://yellow.ai/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Verloop.io", URL: "https://verloop.io/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Wingify", URL: "https://wingify.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "WebEngage", URL: "https://webengage.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Netcore Cloud", URL: "https://netcorecloud.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Capillary Technologies", URL: "https://www.capillarytech.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian Edtech Startups (Batch 17) ==========
+	{Name: "Scaler Academy", URL: "https://www.scaler.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "InterviewBit", URL: "https://www.interviewbit.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Coding Ninjas", URL: "https://www.codingninjas.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Great Learning", URL: "https://www.greatlearning.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Simplilearn", URL: "https://www.simplilearn.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Toppr", URL: "https://www.toppr.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Classplus", URL: "https://classplusapp.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Teachmint", URL: "https://www.teachmint.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Eruditus", URL: "https://www.eruditus.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "upGrad Education", URL: "https://www.upgrad.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian Logistics & Delivery Startups (Batch 18) ==========
+	{Name: "Shadowfax", URL: "https://www.shadowfax.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Loadshare", URL: "https://www.loadshare.net/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "ElasticRun", URL: "https://www.elasticrun.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Ecom Express", URL: "https://www.ecomexpress.in/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Xpressbees", URL: "https://www.xpressbees.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Rivigo", URL: "https://rivigo.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "BlackBuck", URL: "https://blackbuck.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Porter Logistics", URL: "https://porter.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Dunzo Daily", URL: "https://www.dunzo.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Swiggy Instamart", URL: "https://careers.swiggy.com/opportunities", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian Healthtech Startups (Batch 19) ==========
+	{Name: "Practo", URL: "https://www.practo.com/company/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Cure.fit", URL: "https://www.cure.fit/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "HealthifyMe", URL: "https://www.healthifyme.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "MFine", URL: "https://www.mfine.co/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "DocsApp", URL: "https://www.docsapp.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Pristyn Care", URL: "https://www.pristyncare.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Portea Medical", URL: "https://www.portea.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Medlife", URL: "https://www.medlife.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Netmeds", URL: "https://www.netmeds.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Apollo 24/7", URL: "https://www.apollo247.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian Gaming & Entertainment Startups (Batch 20) ==========
+	{Name: "Nazara Technologies", URL: "https://www.nazara.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Winzo", URL: "https://www.winzogames.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Zupee", URL: "https://www.zupee.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Rooter", URL: "https://rooter.gg/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Loco", URL: "https://loco.gg/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Pocket Aces", URL: "https://www.pocketaces.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Glance", URL: "https://www.glance.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "InMobi Glance", URL: "https://www.inmobi.com/company/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Roposo", URL: "https://www.roposo.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Josh", URL: "https://www.dailyhunt.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian B2B & Enterprise Startups (Batch 21) ==========
+	{Name: "Khatabook Tech", URL: "https://khatabook.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Vyapar", URL: "https://vyaparapp.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Zomentum", URL: "https://www.zomentum.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Rocketlane", URL: "https://www.rocketlane.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Zluri", URL: "https://www.zluri.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Whatfix Inc", URL: "https://whatfix.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Apptivo", URL: "https://www.apptivo.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Vtiger", URL: "https://www.vtiger.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Kissflow", URL: "https://kissflow.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Zarget", URL: "https://www.zarget.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Global Remote-First Startups (Batch 22) ==========
+	{Name: "Descript", URL: "https://www.descript.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Linear", URL: "https://linear.app/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Cal.com", URL: "https://cal.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Loom", URL: "https://www.loom.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Miro", URL: "https://miro.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Pitch", URL: "https://pitch.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Coda", URL: "https://coda.io/jobs", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Retool", URL: "https://retool.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Webflow", URL: "https://webflow.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Framer", URL: "https://www.framer.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Developer Tools & Infrastructure (Batch 23) ==========
+	{Name: "Render", URL: "https://render.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Fly.io", URL: "https://fly.io/jobs/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Neon", URL: "https://neon.tech/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Turso", URL: "https://turso.tech/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Convex", URL: "https://www.convex.dev/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Clerk", URL: "https://clerk.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Stytch", URL: "https://stytch.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "WorkOS", URL: "https://workos.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Resend", URL: "https://resend.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Inngest", URL: "https://www.inngest.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== AI/ML Startups (Batch 24) ==========
+	{Name: "Hugging Face", URL: "https://huggingface.co/jobs", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Anthropic", URL: "https://www.anthropic.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Cohere", URL: "https://cohere.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Stability AI", URL: "https://stability.ai/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Replicate", URL: "https://replicate.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Scale AI", URL: "https://scale.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Weights & Biases", URL: "https://wandb.ai/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "LangChain", URL: "https://www.langchain.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Pinecone", URL: "https://www.pinecone.io/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Weaviate", URL: "https://weaviate.io/company/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Web3 & Crypto Startups (Batch 25) ==========
+	{Name: "Alchemy", URL: "https://www.alchemy.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "QuickNode", URL: "https://www.quicknode.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Thirdweb", URL: "https://thirdweb.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Rainbow", URL: "https://rainbow.me/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Zora", URL: "https://zora.co/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Farcaster", URL: "https://www.farcaster.xyz/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Lens Protocol", URL: "https://www.lens.xyz/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Uniswap Labs", URL: "https://boards.greenhouse.io/uniswaplabs", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Aave", URL: "https://aave.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Chainlink Labs", URL: "https://chainlinklabs.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian Mobility & Auto Tech (Batch 26) ==========
+	{Name: "Ola Electric", URL: "https://olaelectric.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Ather Energy Tech", URL: "https://www.atherenergy.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Bounce", URL: "https://www.bounce.bike/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Yulu", URL: "https://www.yulu.bike/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Vogo", URL: "https://www.vogo.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Blu Smart", URL: "https://www.blu-smart.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Revos", URL: "https://www.revos.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Turno", URL: "https://www.turno.club/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Drivezy", URL: "https://www.drivezy.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Zoomcar", URL: "https://www.zoomcar.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian Proptech & Real Estate Tech (Batch 27) ==========
+	{Name: "Housing.com", URL: "https://housing.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "99acres", URL: "https://www.99acres.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "MagicBricks", URL: "https://www.magicbricks.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Square Yards", URL: "https://www.squareyards.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "PropTiger", URL: "https://www.proptiger.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Azuro", URL: "https://www.azuro.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Stanza Living", URL: "https://www.stanzaliving.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Nestaway", URL: "https://www.nestaway.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Zolo Stays", URL: "https://zolostays.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "OYO Rooms", URL: "https://www.oyorooms.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian Agritech & Supply Chain (Batch 28) ==========
+	{Name: "Ninjacart", URL: "https://www.ninjacart.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "DeHaat", URL: "https://www.dehaat.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "AgroStar", URL: "https://www.agrostar.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "WayCool", URL: "https://www.waycool.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Crofarm", URL: "https://crofarm.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Bijak", URL: "https://www.bijak.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Gramophone", URL: "https://www.gramophone.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Agrowave", URL: "https://www.agrowave.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Ergos", URL: "https://www.ergos.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Stellapps", URL: "https://stellapps.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Global Fintech & Payments (Batch 29) ==========
+	{Name: "Revolut", URL: "https://www.revolut.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "N26", URL: "https://n26.com/en/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Wise", URL: "https://www.wise.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Klarna", URL: "https://www.klarna.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Affirm", URL: "https://www.affirm.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Chime", URL: "https://www.chime.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Robinhood", URL: "https://robinhood.com/us/en/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "SoFi", URL: "https://www.sofi.com/careers/", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Marqeta", URL: "https://www.marqeta.com/company/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Adyen", URL: "https://careers.adyen.com/", Selector: "a[href*='job']", LinkAttr: "href"},
+
+	// ========== Indian D2C & Consumer Brands (Batch 30) ==========
+	{Name: "Mamaearth", URL: "https://mamaearth.in/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "boAt", URL: "https://www.boat-lifestyle.com/pages/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Sugar Cosmetics", URL: "https://in.sugarcosmetics.com/pages/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Wow Skin Science", URL: "https://wowskinscience.com/pages/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Bombay Shaving Company", URL: "https://bombayshavingcompany.com/pages/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Sleepy Owl", URL: "https://sleepyowlcoffee.com/pages/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Wakefit", URL: "https://www.wakefit.co/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Pepperfry", URL: "https://www.pepperfry.com/careers.html", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "Urban Ladder", URL: "https://www.urbanladder.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
+	{Name: "FabIndia", URL: "https://www.fabindia.com/careers", Selector: "a[href*='job']", LinkAttr: "href"},
 }
 
 // Experience keywords to filter out (requires more than 2 years)
@@ -355,10 +548,13 @@ func fetchCompanyJobs(company CompanyCareer) ([]Job, error) {
 		return nil, err
 	}
 
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36")
-	req.Header.Set("Accept", "text/html,application/xhtml+xml")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
 
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 20 * time.Second, // Reduced timeout per request
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -377,7 +573,12 @@ func fetchCompanyJobs(company CompanyCareer) ([]Job, error) {
 
 	var jobs []Job
 	seen := make(map[string]bool)
-	jobIDRegex := regexp.MustCompile(`[\w-]+$`)
+	
+	// Better job ID regex - handles more URL patterns
+	jobIDRegex := regexp.MustCompile(`(?:jobs?|careers?|opportunities?|vacancies?)[/-]([a-zA-Z0-9_-]+)(?:[/-]|$)`)
+	
+	// Alternative ID extraction - use last path segment
+	lastPathRegex := regexp.MustCompile(`[^/]+$`)
 
 	doc.Find(company.Selector).Each(func(i int, s *goquery.Selection) {
 		link, exists := s.Attr(company.LinkAttr)
@@ -385,14 +586,23 @@ func fetchCompanyJobs(company CompanyCareer) ([]Job, error) {
 			return
 		}
 
-		// Get title
+		// Skip empty or invalid links
+		link = strings.TrimSpace(link)
+		if strings.HasPrefix(link, "#") || strings.HasPrefix(link, "javascript:") {
+			return
+		}
+
+		// Get title - try multiple strategies
 		title := strings.TrimSpace(s.Text())
-		if title == "" {
-			title = s.Find("h2, h3, h4, span").First().Text()
+		
+		// If direct text is empty or too long, try nested elements
+		if title == "" || len(title) > 200 {
+			title = s.Find("h1, h2, h3, h4, h5, span, .title, .job-title, .position-title").First().Text()
 			title = strings.TrimSpace(title)
 		}
 
-		if title == "" || len(title) > 150 {
+		// Skip if still empty or too long
+		if title == "" || len(title) > 200 {
 			return
 		}
 
@@ -418,12 +628,31 @@ func fetchCompanyJobs(company CompanyCareer) ([]Job, error) {
 			link = baseURL + link
 		}
 
-		// Extract job ID or use hash of URL for stability
-		jobID := jobIDRegex.FindString(link)
+		// Extract job ID - try multiple strategies
+		jobID := ""
+		
+		// Strategy 1: Use regex to find job ID in URL
+		if matches := jobIDRegex.FindStringSubmatch(link); len(matches) > 1 {
+			jobID = matches[1]
+		}
+		
+		// Strategy 2: Use last path segment
+		if jobID == "" {
+			if matches := lastPathRegex.FindStringSubmatch(link); len(matches) > 0 {
+				jobID = matches[0]
+			}
+		}
+		
+		// Strategy 3: Use hash if still no ID
 		if jobID == "" {
 			hash := sha256.Sum256([]byte(link))
-			jobID = hex.EncodeToString(hash[:])[:12] // Use first 12 chars of hash
+			jobID = hex.EncodeToString(hash[:])[:12]
 		}
+
+		// Clean job ID - remove special characters
+		jobID = strings.ReplaceAll(jobID, "/", "")
+		jobID = strings.ReplaceAll(jobID, "?", "")
+		jobID = strings.ReplaceAll(jobID, "#", "")
 
 		jobs = append(jobs, Job{
 			ID:     fmt.Sprintf("%s-%s", strings.ToLower(strings.ReplaceAll(company.Name, " ", "")), jobID),
@@ -445,6 +674,8 @@ func fetchAllCompanyJobsParallel() ([]Job, error) {
 	// Limit concurrency to avoid rate limiting
 	semaphore := make(chan struct{}, 10) // Max 10 concurrent requests
 
+	fmt.Println("  📋 Scanning company career pages...")
+	
 	for _, company := range companyCareerPages {
 		wg.Add(1)
 		go func(c CompanyCareer) {
@@ -456,6 +687,8 @@ func fetchAllCompanyJobsParallel() ([]Job, error) {
 
 			jobs, err := fetchCompanyJobs(c)
 			if err != nil {
+				// Log error but don't fail the entire run
+				fmt.Printf("    %s: error - %v\n", c.Name, err)
 				return
 			}
 

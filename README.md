@@ -16,7 +16,7 @@ Job Watcher is a powerful, automated tool designed to help developers find job o
     -   Hacker News ("Who's Hiring")
     -   Reddit (r/cscareerquestions, r/forhire)
     -   Triplebyte
-    -   Company Career Pages (90+ tech companies)
+    -   Company Career Pages (350+ tech companies including startups, mid-size, and enterprises)
     -   Shared Lists (Google Sheets / GitHub Tables)
 -   **High Performance**: Fetches from all sources in parallel for maximum speed.
 -   **Smart Filtering**:
@@ -184,6 +184,26 @@ Want the job watcher to run automatically every hour without keeping your comput
 **Resume Privacy**: Use the `RESUME_TEXT` secret to keep your resume private while enabling AI matching.
 
 **Free Tier**: Public repos get unlimited minutes. Private repos get 2,000 free minutes/month (more than enough for hourly runs).
+
+### Troubleshooting GitHub Actions
+
+If some sources return 0 jobs in GitHub Actions:
+
+1. **Check the Actions logs** - Go to Actions tab → Latest run → Expand "Run Job Watcher"
+2. **JavaScript-required sites** - Some sites (Wellfound, Naukri) need JavaScript and won't work in GitHub Actions
+3. **Test locally first** - Run `go run . --test-sources` on your machine to verify sources work
+4. **Test individual sources** - Run `go run . --test-sources` to check each source
+
+See **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** for detailed debugging steps.
+
+## Testing
+
+Test all sources individually:
+```bash
+go run . --test-sources
+```
+
+This will show which sources are working and which are failing, with sample jobs from each source.
 
 ## Contributing
 

@@ -1,0 +1,45 @@
+name: Debug Job Sources
+
+on:
+  workflow_dispatch:  # Manual trigger only
+
+permissions:
+  contents: read
+
+jobs:
+  test-sources:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+      
+      - name: Download dependencies
+        run: go mod download
+      
+      - name: Create .env file
+        run: |
+          echo "TG_TOKEN=${{ secrets.TG_TOKEN }}" >> .env
+          echo "TG_CHAT=${{ secrets.TG_CHAT }}" >> .env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+      
+      - name: Test Individual Sources
+        run: go run . --test-sources
+        env:
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT: ${{ secrets.TG_CHAT }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      
+      - name: Test Network Connectivity
+        run: |
+          echo "Testing connectivity to job sites..."
+          curl -I https://remoteok.com/api || echo "RemoteOK: Failed"
+          curl -I https://www.linkedin.com || echo "LinkedIn: Failed"
+          curl -I https://www.indeed.com || echo "Indeed: Failed"
+          curl -I https://www.workatastartup.com || echo "YC Jobs: Failed"
+          curl -I https://www.instahyre.com || echo "Instahyre: Failed"

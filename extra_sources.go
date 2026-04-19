@@ -23,34 +23,54 @@ type YCJobResponse struct {
 }
 
 func fetchYCJobs() ([]Job, error) {
-	// YC Work at a Startup has a public API
-	url := "https://www.workatastartup.com/api/jobs?query=software+engineer&page=1"
+	// Try multiple approaches for YC jobs
+	
+	// Approach 1: Try the jobs API endpoint
+	url := "https://www.workatastartup.com/api/v1/jobs"
 
 	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
+	req.Header.Set("Accept", "application/json, text/plain, */*")
+	req.Header.Set("Referer", "https://www.workatastartup.com/jobs")
 
 	client := &http.Client{Timeout: 15 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		fmt.Printf("  YC API error: %v, trying HTML fallback\n", err)
+		return fetchYCJobsHTML()
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		// Fallback to scraping the HTML page
+		fmt.Printf("  YC API returned status %d, trying HTML fallback\n", resp.StatusCode)
 		return fetchYCJobsHTML()
 	}
 
+	// Try to parse as JSON array directly
+	var jobsArray []YCJobResponse
+	body, _ := io.ReadAll(resp.Body)
+	
+	// Try direct array parse
+	if err := json.Unmarshal(body, &jobsArray); err == nil && len(jobsArray) > 0 {
+		return parseYCJobs(jobsArray), nil
+	}
+
+	// Try wrapped in "jobs" key
 	var data struct {
 		Jobs []YCJobResponse `json:"jobs"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-		return fetchYCJobsHTML()
+	if err := json.Unmarshal(body, &data); err == nil && len(data.Jobs) > 0 {
+		return parseYCJobs(data.Jobs), nil
 	}
 
+	// Fallback to HTML scraping
+	fmt.Println("  YC JSON parsing failed, trying HTML fallback")
+	return fetchYCJobsHTML()
+}
+
+func parseYCJobs(jobsData []YCJobResponse) []Job {
 	var jobs []Job
-	for _, j := range data.Jobs {
+	for _, j := range jobsData {
 		title := j.Title
 		if j.CompanyName != "" {
 			title = fmt.Sprintf("%s @ %s", j.Title, j.CompanyName)
@@ -78,48 +98,84 @@ func fetchYCJobs() ([]Job, error) {
 			Source: "YC Jobs",
 		})
 	}
-
-	return jobs, nil
+	return jobs
 }
 
 func fetchYCJobsHTML() ([]Job, error) {
 	url := "https://www.workatastartup.com/jobs"
 
 	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
 
 	client := &http.Client{Timeout: 15 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		fmt.Printf("  YC HTML fetch error: %v\n", err)
+		return []Job{}, nil // Return empty instead of error to not break the whole flow
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		fmt.Printf("  YC HTML returned status %d\n", resp.StatusCode)
+		return []Job{}, nil
+	}
 
 	body, _ := io.ReadAll(resp.Body)
 	html := string(body)
 
 	var jobs []Job
-	// Parse job links from HTML
-	linkRegex := regexp.MustCompile(`href="(/jobs/\d+)"`)
-	matches := linkRegex.FindAllStringSubmatch(html, -1)
+	// Parse job links from HTML - try multiple patterns
+	patterns := []string{
+		`href="(/jobs/\d+)"`,
+		`href="(https://www\.workatastartup\.com/jobs/\d+)"`,
+		`/jobs/(\d+)`,
+	}
 
 	seen := make(map[string]bool)
-	for i, match := range matches {
-		if len(match) < 2 || i >= 30 {
-			break
-		}
-		path := match[1]
-		if seen[path] {
-			continue
-		}
-		seen[path] = true
+	for _, pattern := range patterns {
+		linkRegex := regexp.MustCompile(pattern)
+		matches := linkRegex.FindAllStringSubmatch(html, -1)
 
-		jobs = append(jobs, Job{
-			ID:     "yc-" + strings.TrimPrefix(path, "/jobs/"),
-			Title:  "Software Engineer @ YC Startup",
-			Link:   "https://www.workatastartup.com" + path,
-			Source: "YC Jobs",
-		})
+		for i, match := range matches {
+			if len(match) < 2 || i >= 30 {
+				break
+			}
+			
+			path := match[1]
+			// Normalize path
+			if !strings.HasPrefix(path, "/jobs/") && !strings.HasPrefix(path, "http") {
+				path = "/jobs/" + path
+			}
+			
+			if seen[path] {
+				continue
+			}
+			seen[path] = true
+
+			jobID := strings.TrimPrefix(path, "/jobs/")
+			jobID = strings.TrimPrefix(jobID, "https://www.workatastartup.com/jobs/")
+			
+			link := path
+			if !strings.HasPrefix(link, "http") {
+				link = "https://www.workatastartup.com" + path
+			}
+
+			jobs = append(jobs, Job{
+				ID:     "yc-" + jobID,
+				Title:  "Software Engineer @ YC Startup",
+				Link:   link,
+				Source: "YC Jobs",
+			})
+		}
+		
+		if len(jobs) > 0 {
+			break // Found jobs with this pattern
+		}
+	}
+
+	if len(jobs) == 0 {
+		fmt.Println("  YC: No jobs found in HTML (site may require JavaScript)")
 	}
 
 	return jobs, nil
@@ -300,7 +356,8 @@ func fetchRedditJobs() ([]Job, error) {
 }
 
 // ================== TRIPLEBYTE / KARAT ==================
-// Note: These require login, so we scrape public listings
+// Note: Triplebyte was acquired by Karat - limited public access
+// This source often fails and is disabled by default
 
 func fetchTriplebyteJobs() ([]Job, error) {
 	// Triplebyte was acquired by Karat, limited public access
@@ -312,9 +369,15 @@ func fetchTriplebyteJobs() ([]Job, error) {
 	client := &http.Client{Timeout: 15 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		fmt.Printf("  Triplebyte fetch error: %v (expected - site has limited public access)\n", err)
+		return []Job{}, nil // Return empty, don't propagate error
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		fmt.Printf("  Triplebyte returned status %d (expected - requires login)\n", resp.StatusCode)
+		return []Job{}, nil
+	}
 
 	body, _ := io.ReadAll(resp.Body)
 	html := string(body)
@@ -340,6 +403,10 @@ func fetchTriplebyteJobs() ([]Job, error) {
 			Link:   "https://triplebyte.com" + path,
 			Source: "Triplebyte",
 		})
+	}
+
+	if len(jobs) == 0 {
+		fmt.Println("  Triplebyte: 0 jobs (site requires login - disabled by default)")
 	}
 
 	return jobs, nil
